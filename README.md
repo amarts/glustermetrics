@@ -66,12 +66,40 @@ curl -u admin:admin -H "Content-Type: application/json" -X POST http://localhost
 ## Configuration on Each Gluster Node
 * You may need to update your SELINUX policy to allow the write_graphite plugin
 to access outbound on port 2003. To test, simply disable SELINUX
+* Install Gluster metrics library to enable tracking utilization, process and
+  diskstats
 
-* Run below command after editing the HOSTNAME and GRAPHITE_SERVER name
+    sudo pip install git+https://github.com/gluster/glustercli-python.git
+
+* Run below command to start sending metrics to graphite server
 
 ```
-$ TIMEOUT=15; while true; do sudo python gmetrics.py; sleep $TIMEOUT; done
+$ python gmetrics.py
 ```
+
+Graphite server and hostname can be configured using,
+
+```
+$ python gmetrics.py --graphite-server localhost --hostname local
+```
+
+## Configurations
+To customize the gmetrics, create a config file and override the settings
+
+        [settings]
+        interval=10
+        enabled_metrics=local_io,local_ps
+        prefix=perf_test_1
+
+And call `gmetrics.py` using,
+
+```
+$ python gmetrics.py -c /root/gmetrics.conf --graphite-server localhost \
+        --hostname local
+```
+
+Configuration change will be detected automatically by `gmetrics.py`, config
+file can be edited as required.
 
 ## Known Issues
 * (**TODO**) Update the known issues
