@@ -173,7 +173,7 @@ def local_io_metrics():
 
                 data = line.split(" ")
                 # Send all data in single timestamp for better monitoring
-                key = ".io%s.%s" % (proc_id, data[0])
+                key = ".io.%s.%s" % (proc_id, data[0])
                 value = data[1].strip()
                 g.send(key, value, timestamp)
 
@@ -249,7 +249,8 @@ def main():
     g = graphitesend.init(graphite_server=args.graphite_server,
                           prefix="gmetrics",
                           system_name=args.hostname,
-                          group="gluster")
+                          group="gluster",
+                          fqdn_squash=True)
 
     # Load Config File
     conf = Config(args.config_file)
@@ -265,8 +266,13 @@ def main():
         if conf.reload():
             print "Reloaded Config file"
 
-            # Update the graphitesend prefix
-            g.formatter.prefix = conf.get("prefix", "gmetrics")
+            # Update the graphitesend prefix/group
+            prefix_list = []
+            prefix_list.append(conf.get("prefix", "gmetrics"))
+            prefix_list.append(args.hostname)
+            prefix_list.append(conf.get("group", "gluster"))
+
+            g.formatter.prefix = '.'.join(prefix_list)
 
             # If Config is reloaded, get enabled metrics list again
             enabled_metrics = conf.get("enabled_metrics")
