@@ -1,0 +1,5 @@
+[settings]
+interval=5
+enabled_metrics=local_io,local_process
+prefix=gbench_sample
+group=perf_test_1
