@@ -88,8 +88,9 @@ To customize the gmetrics, create a config file and override the settings
 
         [settings]
         interval=10
-        enabled_metrics=local_io,local_ps
-        prefix=perf_test_1
+        enabled_metrics=local_io,local_process
+        prefix=gbench_testing
+        group=perf_test_1
 
 And call `gmetrics.py` using,
 
@@ -101,11 +102,20 @@ $ python gmetrics.py -c /root/gmetrics.conf --graphite-server localhost \
 Configuration change will be detected automatically by `gmetrics.py`, config
 file can be edited as required.
 
+Available options for `enabled_metrics` are
+
+```
+    "local_io",
+    "local_utilization",
+    "local_diskstats",
+    "local_process"
+```
+
 ## Known Issues
-* (**TODO**) Update the known issues
-After login to grafana, currently users have to setup the dashboard themself.
+* After login to grafana, currently users have to setup the dashboard themself.
+* (**TODO**) Update other known issues
 
 
 ## Credits
 
-Most of this README is taken over from [cephmetrics](https://github.com/ceph/cephmetrics).
+Setting up of docker images for graphite and grafana section in this README is taken over from [cephmetrics](https://github.com/ceph/cephmetrics).
