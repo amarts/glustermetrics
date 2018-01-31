@@ -9,7 +9,7 @@
 # later), or the GNU General Public License, version 2 (GPLv2), in all
 # cases as published by the Free Software Foundation.
 
-import os
+import os, errno
 import glob
 import time
 from ConfigParser import ConfigParser
@@ -20,6 +20,7 @@ import graphitesend
 
 
 PLUGIN_NAME = 'glusterfs'
+METRICS_DIR = '/var/run/gluster/metrics/'
 
 # Available metrics and respective metrics collection functions
 AVAILABLE_METRICS = [
@@ -144,15 +145,16 @@ class Config(object):
 def local_io_metrics():
     global g
     print "Send Signal to GlusterFS..."
-    os.system("ps aux | grep gluster | grep -v grep | "
-              "awk '{ print $2 }' | xargs kill -USR2")
+
+    os.system ("ps aux | grep gluster | grep -v grep |grep -v gmetrics| "
+               "awk '{ print $2 }' | xargs kill -USR2")
 
     # Idea is to provide a second for application to dump metrics
     time.sleep(1)
 
     timestamp = time.time()
 
-    for gfile in glob.glob("/tmp/glusterfs.*"):
+    for gfile in glob.glob("%s/gmetrics.*" % METRICS_DIR):
         with open(gfile) as f:
             proc_id = "(null)"
             for line in f:
@@ -172,6 +174,9 @@ def local_io_metrics():
                     continue
 
                 data = line.split(" ")
+                if len(data) < 2:
+                    break
+
                 # Send all data in single timestamp for better monitoring
                 key = ".io.%s.%s" % (proc_id, data[0])
                 value = data[1].strip()
@@ -179,8 +184,7 @@ def local_io_metrics():
 
         # Remove the file, so there won't be a repeat
         os.remove(gfile)
-        print("%s  [DONE] " % gfile)
-
+        #print("%s  [DONE] " % gfile)
 
 def local_diskstats_metrics():
     # Local import, only if required
@@ -259,6 +263,13 @@ def main():
     # If enabled_metrics list is empty enable all metrics
     if not enabled_metrics:
         enabled_metrics = AVAILABLE_METRICS
+
+    # Create the metrics dir in which all the metrics would be dumped
+    try:
+        os.mkdir(METRICS_DIR)
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise
 
     # Metrics collection Loop
     while True:
