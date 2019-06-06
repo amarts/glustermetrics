@@ -1,5 +1,5 @@
 [settings]
 interval=10
 enabled_metrics=local_io,local_process,local_utilization,local_diskstats
-prefix=glusterfs.perf.sample
+prefix=glusterfs-perf
 group=nightly
