@@ -146,8 +146,7 @@ def local_io_metrics():
     global g
     print "Send Signal to GlusterFS..."
 
-    os.system ("ps aux | grep gluster | grep -v grep |grep -v gmetrics| "
-               "awk '{ print $2 }' | xargs kill -USR2")
+    os.system ("pgrep glusterfs | xargs kill -USR2")
 
     # Idea is to provide a second for application to dump metrics
     time.sleep(1)
