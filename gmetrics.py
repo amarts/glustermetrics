@@ -245,9 +245,10 @@ def main():
                         help="Graphite Server",
                         default="localhost")
     parser.add_argument("--hostname",
-                        help="Hostname",
-                        default="local")
+                        help="Hostname")
     args = parser.parse_args()
+    if not args.hostname:
+        args.hostname = socket.gethostname()
 
     # Initialize Graphite Server
     g = graphitesend.init(graphite_server=args.graphite_server,

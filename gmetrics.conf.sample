@@ -1,5 +1,5 @@
 [settings]
-interval=5
-enabled_metrics=local_io,local_process
-prefix=gbench_sample
-group=perf_test_1
+interval=10
+enabled_metrics=local_io,local_process,local_utilization,local_diskstats
+prefix=glusterfs.perf.sample
+group=nightly
