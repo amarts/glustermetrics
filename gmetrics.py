@@ -9,7 +9,7 @@
 # later), or the GNU General Public License, version 2 (GPLv2), in all
 # cases as published by the Free Software Foundation.
 
-import os, errno
+import os, errno, socket
 import glob
 import time
 from ConfigParser import ConfigParser
